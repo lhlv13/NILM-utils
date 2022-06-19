@@ -20,7 +20,8 @@ import torch
 from torch import nn
 import matplotlib.pyplot as plt
 import os
-
+from PIL import Image
+import numpy as np
 
 def readImgFolder(path):
     """ 
@@ -46,8 +47,11 @@ def readImgFolder(path):
             img_list = os.listdir(imgs_path)
             for img in img_list:
                 full_path = os.path.join(imgs_path, img)  ## 包含圖片名稱的完整路徑
-                output_list.append([full_path, label])
-    print(output_list)
+                if os.path.isfile(full_path):
+                    ext = img.split(".")[-1].lower()
+                    if ext=="jpg" or ext=="png" or ext=="bmp":
+                        output_list.append([full_path, label])
+    # print(output_list)
     return output_list
 
 
@@ -67,9 +71,7 @@ class MyCrossEntropy(nn.Module):
             batch_loss += loss
             
         return batch_loss / (i+1)
-
-
-
+    
 def train_one_epoch(train_loader, model, loss_fn, optimizer, device):
     size = len(train_loader.dataset)
     loss_v = 0
@@ -112,6 +114,9 @@ def test(test_loader, model, loss_fn, device):
     loss_v /= len(test_loader)
     acc_v /= size
     return loss_v, acc_v 
+
+
+
 def plot_on_air(train_loss_list, train_acc_list, test_loss_list, test_acc_list, total_epochs=None):
     x = [i for i in range(1, len(train_loss_list)+1)]
     fig = plt.figure("loss-acc", figsize=(10, 5))
@@ -139,22 +144,12 @@ def plot_on_air(train_loss_list, train_acc_list, test_loss_list, test_acc_list, 
     if total_epochs != None:
         plt.xlim((0, total_epochs+1))
     
-    plot_save_path = "./"
-    plt.savefig(plot_save_path+"loss_acc.png")
+    
+    plt.savefig("./loss_acc.png")
     plt.show()
     
 
-def train(train_loader, test_loader, model, epochs=10, lr=0.01, opt="sgd", early_stop=200):
-    """ 訓練圖片並分類 ( 訓練使用這個就對了 )
-    
-    Parameters
-    -------------
-    train_loader, test_loader, model, epochs=10, lr=0.01, opt="sgd", early_stop=200
-    """
-    model_path = "./model/"
-    if not os.path.isdir(model_path):
-        os.mkdir(model_path)
-        
+def train(train_loader, test_loader, model, epochs=10, lr=0.01, opt="sgd", early_stop=200, model_path="./model"):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = model.to(device)
     print("Using:",device)
@@ -185,6 +180,8 @@ def train(train_loader, test_loader, model, epochs=10, lr=0.01, opt="sgd", early
         
         ## save
         ##### save best
+        if not os.path.isdir(model_path):
+            os.mkdir(model_path)
         if best_acc < test_acc:
             best_acc = test_acc
             torch.save(model.state_dict(), model_path+"best.pth")
@@ -201,7 +198,7 @@ def train(train_loader, test_loader, model, epochs=10, lr=0.01, opt="sgd", early
     
     torch.save(model.state_dict(), model_path+"final_"+str(round(test_acc*100, 2))+".pth")
     print(f"save final model!! acc: {test_acc*100:>.2f}%")
-    return
+    return model
 
 
 def main():

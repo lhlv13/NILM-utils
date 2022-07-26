@@ -6,7 +6,6 @@ Created on Sun Jun 19 16:47:13 2022
 """
 
 from yuyi_nilm_package.nilm import *
-import yuyi_nilm_package.classification
 import yuyi_nilm_package.computation
 import yuyi_nilm_package.datasets
 import yuyi_nilm_package.event_detection

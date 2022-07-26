@@ -7,7 +7,7 @@ Created on Sun Jun 19 17:09:27 2022
 import numpy as np
 from .preprocessing import *
 
-def useDownsampling(wave, new_sampling_points):
+def useDownsamplingByZerocrossing(wave, new_sampling_points):
     """ 降採樣 
     參數
     --------
@@ -30,3 +30,8 @@ def useDownsampling(wave, new_sampling_points):
             index += index_unit
         
     return np.array(new_wave)
+
+
+# def useDownsamplingByAllWaves(wave, stride):
+    
+    

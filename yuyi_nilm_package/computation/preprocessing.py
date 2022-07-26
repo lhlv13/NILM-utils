@@ -6,7 +6,7 @@ Created on Sun Jun 19 17:11:47 2022
 """
 import numpy as np
 
-def zeroCrossing(wave:list)->list:
+def zeroCrossing(wave:list, sample_point_of_T=None)->list:
     """
     功能
     --------
@@ -21,9 +21,23 @@ def zeroCrossing(wave:list)->list:
     zero_crossing_list = []
     size = len(wave)
     zero_threshold = 0
+    if sample_point_of_T:
+        pre_i = None
+        point_num = sample_point_of_T * 0.75
     for i in range(1, size):
         if((wave[i]>zero_threshold) and (wave[i-1]<=zero_threshold)):
-            zero_crossing_list.append(i)
+            if sample_point_of_T:
+                if pre_i and (i - pre_i) < (point_num):
+                    continue
+                
+            zero_crossing_list.append(i)  ## 增加 零交越點
+             
+            if sample_point_of_T:
+                pre_i = i
+                i += sample_point_of_T
+                    
+                    
+                    
     
     return np.array(zero_crossing_list)
 
@@ -60,3 +74,11 @@ def fit_ps(voltage, current, sampPerPeriods=32):
             output_I.append(current[k2] + (current[k3] - current[k2]) * zero_shift[i])
             
     return np.array(output_V), np.array(output_I)
+
+def minMaxScaling(wave):
+    if not isinstance(wave, np.ndarray):
+        wave = np.array(wave)
+    min_v = min(wave)
+    max_v = max(wave)
+    
+    return (wave - min_v) / (max_v - min_v)

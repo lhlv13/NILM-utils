@@ -37,7 +37,17 @@ def zeroCrossing(wave:list, sample_point_of_T=None)->list:
                 i += sample_point_of_T
                     
                     
-                    
+    ## 增加假如只有一個週期的情況下
+    len_zeros = len(zero_crossing_list)
+    if len_zeros == 0:
+        if wave[0] > 0 and wave[0]<1:
+            zero_crossing_list.append(0)
+    ## 增加可能漏掉的週期
+    if len_zeros > 1:
+        num = zero_crossing_list[1] - zero_crossing_list[0]
+        if zero_crossing_list[0] > (num-1) and zero_crossing_list[0] < (num+1):
+            zero_crossing_list.insert(0, 0)
+        
     
     return np.array(zero_crossing_list)
 

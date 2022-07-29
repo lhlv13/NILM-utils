@@ -7,26 +7,27 @@ Created on Sun Jun 19 17:13:55 2022
 import numpy as np
 import matplotlib.pyplot as plt 
 
-def cos_wave(A, frequency, sample_frequency_point, sample_period, isShow=True):
+def cos_wave(A, frequency, sample_points_of_T, phi, t):
     """ 
-    Input:
+    Input
     ----------
     A: 振幅
-    frequency: 每秒幾個波
-    sample_frequency_point:每秒取多少點
-    sample_period: 取多少秒
+    frequency: 頻率
+    sample_points_of_T: 每周期取樣點數 
+    phi: 相位
+    t: 時間(s)
     """
-    x = np.linspace(0, sample_period, sample_frequency_point)
-    y = A * np.cos(2*np.pi* frequency* x)
-    if isShow:
-        plt.plot(x, y)
-        plt.show()
-    return x, y
+    sample_frequency = frequency * sample_points_of_T
+    Ts = 1 / sample_frequency
+    n = t / Ts
+    n = np.arange(n)
+    cos = A * np.cos(2*np.pi*frequency*n*Ts + phi*(np.pi/180)) 
+    return n, cos   ## plt.plot(n, cos)
 
-def sin_wave(A, frequency, sample_frequency, sample_period, isShow=True):
-    x = np.linspace(0, sample_period, sample_frequency)
-    y = A * np.sin(2*np.pi* frequency* x)
-    if isShow:
-        plt.plot(x, y)
-        plt.show()
-    return x, y
+def sin_wave(A, frequency, sample_points_of_T, phi, t):
+    sample_frequency = frequency * sample_points_of_T
+    Ts = 1 / sample_frequency
+    n = t / Ts
+    n = np.arange(n)
+    sin = A * np.sin(2*np.pi*frequency*n*Ts + phi*(np.pi/180)) 
+    return n, sin   ## plt.plot(n, sin)
